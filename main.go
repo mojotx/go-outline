@@ -58,7 +58,7 @@ func main() {
 		reportError(fmt.Errorf("Could not parse file %s", *file))
 	}
 
-	declarations := []Declaration{}
+	var declarations []Declaration
 
 	for _, decl := range fileAst.Decls {
 		switch decl := decl.(type) {
@@ -121,14 +121,14 @@ func main() {
 		}
 	}
 
-	pkg := []*Declaration{&Declaration{
-		fileAst.Name.String(),
-		"package",
-		"",
-		fileAst.Pos(),
-		fileAst.End(),
-		declarations,
-	}}
+	var pkg []*Declaration
+	pkg = append(pkg, &Declaration{
+		Label:        fileAst.Name.String(),
+		Type:         "package",
+		Start:        fileAst.Pos(),
+		End:          fileAst.End(),
+		Children:     declarations,
+	})
 
 	str, _ := json.Marshal(pkg)
 	fmt.Println(string(str))
@@ -149,5 +149,5 @@ func getReceiverType(fset *token.FileSet, decl *ast.FuncDecl) (string, error) {
 }
 
 func reportError(err error) {
-	fmt.Fprintln(os.Stderr, "error:", err)
+	_, _ = fmt.Fprintln(os.Stderr, "error:", err)
 }
