@@ -33,15 +33,17 @@ func main() {
 	flag.Parse()
 	fset := token.NewFileSet()
 	parserMode := parser.ParseComments
-	if *importsOnly == true {
+	if *importsOnly {
 		parserMode = parser.ImportsOnly
 	}
 
 	var fileAst *ast.File
 	var err error
 
-	if *modified == true {
-		archive, err := buildutil.ParseOverlayArchive(os.Stdin)
+	if *modified {
+
+		var archive map[string][]byte
+		archive, err = buildutil.ParseOverlayArchive(os.Stdin)
 		if err != nil {
 			reportError(fmt.Errorf("failed to parse -modified archive: %v", err))
 		}
